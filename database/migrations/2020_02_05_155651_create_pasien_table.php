@@ -16,11 +16,12 @@ class CreatePasienTable extends Migration
         Schema::create('pasien', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nama', 100);
-            $table->string('no_rekam_medis', 100);
+            $table->string('no_rekam_medis', 100)->unique();
             $table->date('tanggal');
             $table->text('alamat');
             $table->integer('usia');
-            $table->string('pekerjaan', 200);
+            $table->string('jenis_kelamin');
+            $table->string('pekerjaan', 200)->nullable();
             $table->timestamps();
         });
     }
