@@ -22,5 +22,16 @@ Route::post('/dokter/remove', 'DokterController@remove')->name('dokter-remove');
 
 Route::get('/pasien/add', 'PasienController@add')->name('pasien-add');
 Route::post('/pasien/store', 'PasienController@store')->name('pasien-store');
+Route::post('/pasien/remove', 'PasienController@remove')->name('pasien-remove');
+Route::post('/pasien/edit', 'PasienController@edit')->name('pasien-edit');
 Route::get('/pasien/list', 'PasienController@list')->name('pasien-list');
-Route::get('/pasien/search', 'PasienController@list')->name('pasien-search');
+Route::get('/pasien/search', 'PasienController@search')->name('pasien-search');
+Route::get('/pasien/{id}', 'PasienController@detail')->name('pasien-detail');
+Route::get('/pasien/{id}/kunjungan', 'PasienController@detailKunjunganSearch')->name('pasien-kunjungan-search');
+Route::post('/pasien/upload', 'PasienController@upload')->name('pasien-upload');
+Route::get('/pasien/file/{id}', 'PasienController@viewFile')->name('pasien-view-file');
+Route::post('/pasien/remove/file', 'PasienController@removeFile')->name('pasien-remove-file');
+
+Route::post('/kunjungan/store', 'KunjunganController@store')->name('kunjungan-store');
+Route::post('/kunjungan/remove', 'KunjunganController@remove')->name('kunjungan-remove');
+Route::post('/kunjungan/edit', 'KunjunganController@edit')->name('kunjungan-edit');

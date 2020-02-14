@@ -19,7 +19,7 @@ class CreatePasienTable extends Migration
             $table->string('no_rekam_medis', 100)->unique();
             $table->date('tanggal');
             $table->text('alamat');
-            $table->integer('usia');
+            $table->date('tanggal_lahir');
             $table->string('jenis_kelamin');
             $table->string('pekerjaan', 200)->nullable();
             $table->timestamps();

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFileStorageTable extends Migration
+class CreateAntrianTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,9 @@ class CreateFileStorageTable extends Migration
      */
     public function up()
     {
-        Schema::create('file_storage', function (Blueprint $table) {
+        Schema::create('antrian', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->text('keterangan');
-            $table->string('file_name');
-            $table->string('directory');
-            $table->date('tanggal');
-            $table->integer('id_pasien');
+            $table->integer('id_pasien')->unique()->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +27,6 @@ class CreateFileStorageTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('file_storage');
+        Schema::dropIfExists('antrian');
     }
 }
