@@ -32,6 +32,8 @@ Route::post('/pasien/upload', 'PasienController@upload')->name('pasien-upload');
 Route::get('/pasien/file/{id}', 'PasienController@viewFile')->name('pasien-view-file');
 Route::post('/pasien/remove/file', 'PasienController@removeFile')->name('pasien-remove-file');
 
+Route::get('/kunjungan/list', 'KunjunganController@list')->name('kunjungan-list');
+Route::get('/kunjungan/list/filter', 'KunjunganController@filter')->name('kunjungan-filter');
 Route::post('/kunjungan/store', 'KunjunganController@store')->name('kunjungan-store');
 Route::post('/kunjungan/remove', 'KunjunganController@remove')->name('kunjungan-remove');
 Route::post('/kunjungan/edit', 'KunjunganController@edit')->name('kunjungan-edit');

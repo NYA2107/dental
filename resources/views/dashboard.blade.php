@@ -142,7 +142,7 @@
                         
                         <li class="list-divider"></li>
                         <li class="nav-small-cap"><span class="hide-menu">Pasien</span></li>
-                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="app-chat.html"
+                        <li class="sidebar-item {{$active == 'kunjungan'?'selected':''}}"> <a class="sidebar-link sidebar-link" href="{{route('kunjungan-list')}}"
                                 aria-expanded="false"><i data-feather="message-square" class="feather-icon"></i><span
                                     class="hide-menu">Kunjungan</span></a></li>
                         <li class="sidebar-item {{$active == 'pasien'?'selected':''}}"> <a class="sidebar-link has-arrow" href="javascript:void(0)"

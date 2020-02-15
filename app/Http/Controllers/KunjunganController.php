@@ -11,7 +11,7 @@ use Redirect;
 class KunjunganController extends Controller
 {
     public function __construct(){
-        $this->active = 'pasien';
+        $this->active = 'kunjungan';
         $this->rules = array(
             'tanggal'=> 'required',
             'anamnesa' => 'required',
@@ -21,6 +21,31 @@ class KunjunganController extends Controller
             'id_pasien' => 'required',
             'id_dokter' => 'required'
         );
+    }
+
+    function list(Request $request){
+        $kunjungan = Kunjungan::orderBy('tanggal', 'desc')->paginate(10);
+        return view('main.kunjungan.list')
+        ->with('kunjungan', $kunjungan)
+        ->with('active', $this->active);
+    }
+
+    function filter(Request $request){
+        if($request->from && $request->to){
+            $kunjungan = Kunjungan::whereBetween('tanggal', [$request->from, $request->to])->orderBy('tanggal', 'desc')->paginate(10);
+        }else if($request->from){
+            $kunjungan = Kunjungan::where('tanggal', '>=', $request->from )->paginate(10);
+        }else if($request->to){
+            $kunjungan = Kunjungan::where('tanggal', '<=', $request->to )->paginate(10);
+        }
+        else{
+            $kunjungan = Kunjungan::orderBy('tanggal', 'desc')->paginate(10);
+        }
+        return view('main.kunjungan.list')
+        ->with('from', $request->from)
+        ->with('to', $request->to)
+        ->with('kunjungan', $kunjungan)
+        ->with('active', $this->active);
     }
 
     //POST
