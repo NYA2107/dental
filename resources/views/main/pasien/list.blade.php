@@ -5,6 +5,60 @@
 @endsection
 
 @section('content')
+@foreach($pasien??[] as $key => $v)
+    <div id="modal-kunjungan-{{$v->id}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dark-header-modalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header modal-colored-header bg-dark">
+                    <h4 class="modal-title" id="dark-header-modalLabel">Tambah Kunjungan - {{$v->nama}}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <!-- Form Add Kunjungan -->
+                <div class="card-body">
+                    <form method="post" action="{{route('kunjungan-store')}}">
+                        {{ csrf_field() }}
+                        <div style="display:grid;grid-template-columns:1fr 1fr;grid-gap:1em">
+                            <input type="hidden" name="id_pasien" value="{{$v->id}}">
+                            <div style="grid-column:1/2">
+                                <label class="form-control-label">Tanggal</label>
+                                <input type="date" value="{{$tanggal??''}}" class="form-control" name="tanggal">
+                            </div>
+                            <div class="grid-column:2/3">
+                                <label for="dokter">Dokter</label>
+                                <select class="form-control" name="id_dokter" id="dokter">
+                                    @foreach($dokter as $o)
+                                        <option value="{{$v->id}}">{{$o->nama}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div style="grid-column:1/3">
+                                <label class="form-control-label">Anamnesa</label>
+                                <textarea placeholder="Masukan anamnesa" name="anamnesa" class="form-control"></textarea>
+                            </div>
+                            <div style="grid-column:1/3">
+                                <label class="form-control-label">Diagnosa</label>
+                                <textarea placeholder="Masukan diagnosa" name="diagnosa" class="form-control"></textarea>
+                            </div>
+                            <div style="grid-column:1/3">
+                                <label class="form-control-label">Tindakan</label>
+                                <textarea placeholder="Masukan tindakan" name="tindakan" class="form-control"></textarea>
+                            </div>
+                            
+                            <div style="grid-column:1/3">
+                                <label class="form-control-label">Biaya</label>
+                                <input type="number" class="form-control" name="biaya">
+                            </div>
+                        </div>
+                        <div style="display:flex;justify-content:center;margin-top:1em;">
+                            <input type="submit" value="Simpan" class="form-control btn waves-effect waves-light btn-dark">
+                        </div>
+                    </form>
+                    <!-- End Form Add Kunjungan -->
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    @endforeach
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Filter Pasien</h4>
@@ -67,7 +121,7 @@
                 <p class="card-text">@if($v->jenis_kelamin == 'L')Laki-laki @else Perempuan @endif , <code>{{$v->pekerjaan}}</code> yang lahir pada tanggal <code>{{$tanggal_lahir}}</code> didaftarkan sebagai pasien pada tanggal <code>{{$tanggal}}</code></p>
                 <p class="card-text">Alamat : <code>{{$v->alamat}}</code></p>
                 <a href="javascript:void(0)" class="btn btn-light">Tambah Ke Antrian</a>
-                <a href="javascript:void(0)" class="btn btn-secondary">Berkunjung</a>
+                <a href="javascript:void(0)" data-toggle="modal" data-target="#modal-kunjungan-{{$v->id}}" class="btn btn-secondary">Berkunjung</a>
                 <a href="{{route('pasien-detail', $v->id)}}" class="btn btn-primary">Detail</a>
             </div>
         </div>
@@ -78,4 +132,5 @@
             {{ $pasien->links() }}
         @endif
     </div>
+
 @endsection

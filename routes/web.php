@@ -37,3 +37,5 @@ Route::get('/kunjungan/list/filter', 'KunjunganController@filter')->name('kunjun
 Route::post('/kunjungan/store', 'KunjunganController@store')->name('kunjungan-store');
 Route::post('/kunjungan/remove', 'KunjunganController@remove')->name('kunjungan-remove');
 Route::post('/kunjungan/edit', 'KunjunganController@edit')->name('kunjungan-edit');
+Route::post('/kunjungan/excel', 'KunjunganController@exportExcel')->name('kunjungan-excel');
+Route::post('/kunjungan/pdf', 'KunjunganController@exportPdf')->name('kunjungan-pdf');

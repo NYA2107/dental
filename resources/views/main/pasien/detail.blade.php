@@ -115,7 +115,7 @@
                         ?>
                         <div class="card-header" style="display:grid;grid-template-columns:1fr auto;">
                             <h4 class="mb-0 text-white">
-                                {{$tanggal}} - {{$v->dokter->nama}}
+                                {{$tanggal}} - Dokter : {{$v->dokter->nama}}
                             </h4>
                             <div>
                                 <a href="javascript:void(0)" data-toggle="modal" data-target="#modal-kunjungan-edit-{{$v->id}}" style="margin-right:0.3em;"><i class="fas fa-edit text-white"></i></a>
@@ -126,7 +126,7 @@
                             <p class="card-text m-0">Anamnesa : <code>{{$v->anamnesa}}</code></p>
                             <p class="card-text m-0">Diagnosa : <code>{{$v->diagnosa}}</code></p>
                             <p class="card-text m-0">Tindakan : <code>{{$v->tindakan}}</code></p>
-                            <p class="card-text m-0">Biaya : <code>{{$v->biaya}}</code></p>
+                            <p class="card-text m-0">Biaya : <code>@currency($v->biaya)</code></p>
                         </div>
                     </div>
                     @endforeach

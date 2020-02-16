@@ -14,7 +14,7 @@
                 <h6 class="card-subtitle">Filter kunjungan berdasarkan range tanggal</h6>
             </div>
             <div>
-                <a class="btn" href=""><span class="float-right"><i class="fas fa-undo"></i> Refresh</span></a>
+                <a class="btn" href="{{route('kunjungan-list')}}"><span class="float-right"><i class="fas fa-undo"></i> Refresh</span></a>
             </div> 
         </div>
         <form method="get" action="{{route('kunjungan-filter')}}" enctype="multipart/form-data">
@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div style="display:flex;justify-content:center;margin-top:1em;">
-                <input type="submit" value="Filter Kunjungan" class="form-control btn waves-effect waves-light btn-dark">
+                <input type="submit" value="Set Filter" class="form-control btn waves-effect waves-light btn-dark">
             </div>
         </form>
     </div>
@@ -46,24 +46,36 @@
         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion" style="">
             <div class="card-body">
                 <div style="display:grid;grid-template-columns:9em 9em 1fr 1fr 1fr;grid-gap:1em">
-                    <div style="grid-column:1/2">
-                        <a href="#" type="date"class="btn btn-success text-white">Export to Excel</a>
-                    </div>
-                    <div style="grid-column:2/3">
-                        <a href="#" type="date"class="btn btn-success text-white">Export to PDF</a>
-                    </div>
+                    <form style="grid-column:1/2" method="post" action="{{route('kunjungan-excel')}}">
+                        {{ csrf_field() }}
+                        <input type="hidden" name="from" value="{{$from??''}}">
+                        <input type="hidden" name="to" value="{{$to??''}}">
+                        <input type="submit" class="btn btn-success text-white" value="Export to Excel">
+                    </form>
+                    <form style="grid-column:2/3" method="post" action="{{route('kunjungan-pdf')}}">
+                        {{ csrf_field() }}
+                        <input type="hidden" name="from" value="{{$from??''}}">
+                        <input type="hidden" name="to" value="{{$to??''}}">
+                        <input type="submit" class="btn btn-success text-white" value="Export to Pdf">
+                    </form>
                 </div>
             </div>
         </div>
     </div> <!-- end card-->
 </div>  
 
+<div class="card">
+    <div class="card-body">
+        <p>Menampilkan : <code>{{$totalKunjungan??''}}</code> Kunjungan</p>
+        <p>Total Pemasukan : <code>@currency($totalBiaya)</code></p>
+    </div>
+</div>
+
 <div style="display:grid;grid-template-columns:1fr 1fr; grid-column-gap:1em;">
     @foreach($kunjungan??[] as $key => $v)
     <div class="card text-white bg-dark">
         <?php
             $tanggal = date_format(date_create($v->tanggal), 'd-m-Y');
-
         ?>
         <div class="card-header" style="display:grid;grid-template-columns:1fr auto;">
             <h4 class="mb-0 text-white">
@@ -76,7 +88,7 @@
             <p class="card-text m-0">Anamnesa : <code>{{$v->anamnesa}}</code></p>
             <p class="card-text m-0">Diagnosa : <code>{{$v->diagnosa}}</code></p>
             <p class="card-text m-0">Tindakan : <code>{{$v->tindakan}}</code></p>
-            <p class="card-text m-0">Biaya : <code>{{$v->biaya}}</code></p>
+            <p class="card-text m-0">Biaya : <code>@currency($v->biaya)</code></p>
         </div>
     </div>
     @endforeach

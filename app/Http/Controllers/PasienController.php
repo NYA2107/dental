@@ -48,6 +48,7 @@ class PasienController extends Controller
     function list(){
         return view('main.pasien.list')
         ->with('pasien', Pasien::paginate(10))
+        ->with('dokter', Dokter::all())
         ->with('active', $this->active);
     }
 
@@ -79,6 +80,7 @@ class PasienController extends Controller
 
         return view('main.pasien.list')
         ->with('pasien', $pasien)
+        ->with('dokter', Dokter::all())
         ->with('active', $this->active);
     }
 
