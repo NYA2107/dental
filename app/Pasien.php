@@ -14,6 +14,14 @@ class Pasien extends Model
         return $this->hasMany('App\Kunjungan', 'id_pasien', 'id');
     }
 
+    public function odontogram(){
+        return $this->hasMany('App\Odontogram', 'id_pasien', 'id');
+    }
+
+    public function antrian(){
+        return $this->hasMany('App\Antrian', 'id_pasien', 'id');
+    }
+
     public function file(){
         return $this->hasMany('App\FileStorage', 'id_pasien', 'id');
     }

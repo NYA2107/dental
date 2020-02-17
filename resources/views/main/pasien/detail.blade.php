@@ -60,7 +60,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#profile-b2" data-toggle="tab" aria-expanded="true" class="nav-link">
+                <a href="#odontogram" data-toggle="tab" aria-expanded="true" class="nav-link">
                     <i class="mdi mdi-account-circle d-lg-none d-block mr-1"></i>
                     <span class="d-none d-lg-block">Odontogram</span>
                 </a>
@@ -140,8 +140,8 @@
                 <p style="text-align:center;">Tidak ada data yang ditampilkan</p>
                 @endif
             </div>
-            <div class="tab-pane show" id="profile-b2">
-                  
+            <div class="tab-pane show" id="odontogram">
+                  <div id="odontogram-diagram"></div>
             </div>
             <div class="tab-pane" id="file_storage">
                 <div id="accordion" class="custom-accordion mb-4">
@@ -461,10 +461,386 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>
-<script>
-    function searchKunjungan(){
-        console.log(document.getElementById("filter-kunjungan"))
-        console.log('aaa')
+<script src="{{url('react/babel.min.js')}}"></script>
+<script src="{{url('react/lodash.min.js')}}"></script>
+<script crossorigin src="{{url('react/react.production.min.js')}}"></script>
+<script crossorigin src="{{url('react/react-dom.production.min.js')}}"></script>
+<script src="{{url('react/axios.min.js')}}"></script>
+<script type="text/babel"> 
+    let colorLib = {
+        lightGrey:'#e2e2e2',
+        grey:'#757575',
+        normal:'white',
+        belum_erupsi:'#49b0ff',
+        sudah_dicabut:'#ff4c8d',
+        sudah_goyah:'#4fff4c',
+        tambalan:'#ff4c4c',
+        karies:'#c34cff',
+        gigi_tiruan:'#ffd84c',
+        gigi_sehat:'#4cdbff',
+        none:'none'
     }
+
+    const Container = (props) =>{
+        let style = {
+            display:'grid',
+            gridTemplateColumns:'1fr',
+            gridGap:'1em'
+        }
+        return(
+            <div style={style}>
+                {props.children}
+            </div>
+        )
+    }
+
+    const DiagramContainer = (props) => {
+        let style = {
+            display:'grid',
+            gridTemplateColumns:'1fr 1fr',
+            gridGap:'1em'
+        }
+        return(
+            <div style={style}>
+                {props.children}
+            </div>
+        )
+    }
+    const LeftContainer = (props) => {
+        let style = {
+            display:'flex',
+            justifyContent:'flex-end'
+        }
+        return(
+            <div style={style}>
+                {props.children}
+            </div>
+        )
+    }
+
+    const RightContainer = (props) => {
+        let style = {
+            display:'flex',
+            justifyContent:'flex-start'
+        }
+        return(
+            <div style={style}>
+                {props.children}
+            </div>
+        )
+    }
+
+    const Gigi = (props) =>{
+        let gridTemplate = props.gridTemplate?props.gridTemplate:'10px 20px 10px'
+        let {text, onClick, tagDepan, tagKiri, tagTengah, tagKanan, tagBelakang, tagBlock} = props
+        if(tagBlock != 'none'){
+            tagDepan = tagBlock
+            tagKiri = tagBlock
+            tagTengah = tagBlock
+            tagKanan = tagBlock
+            tagBelakang = tagBlock
+        }
+        let style = {
+            display:'grid',
+            gridTemplateColumns:gridTemplate,
+            gridTemplateRows:gridTemplate,
+            margin:'0.5em',
+            padding:'0.4px',
+            border:`1px solid ${colorLib.grey}`, 
+            cursor:'pointer',
+            backgroundColor:colorLib.lightGrey
+        }
+
+        const handleClick = () =>{
+            props.onClick(props)
+        }
+
+        const Depan = (props) =>{
+            let style = {
+                gridColumn:'2/3',
+                gridRow:'1/2',
+                backgroundColor:props.color
+            }
+            return(
+                <div style={style}></div>
+            )
+        }
+
+        const Kiri = (props) =>{
+            let style = {
+                gridColumn:'1/2',
+                gridRow:'2/3',
+                backgroundColor:props.color
+            }
+            return(
+                <div style={style}></div>
+            )
+        }
+
+        const Tengah = (props) =>{
+            let style = {
+                gridColumn:'2/3',
+                gridRow:'2/3',
+                display:'flex',
+                justifyContent:'center',
+                alignItems:'center',
+                backgroundColor:props.color,
+                color:'blue'
+            }
+            return(
+                <div style={style}>{props.children}</div>
+            )
+        }
+
+        const Kanan = (props) =>{
+            let style = {
+                gridColumn:'3/4',
+                gridRow:'2/3',
+                backgroundColor:props.color
+            }
+            return(
+                <div style={style}></div>
+            )
+        }
+
+        const Belakang = (props) =>{
+            let style = {
+                gridColumn:'2/3',
+                gridRow:'3/4',
+                backgroundColor:props.color
+            }
+            return(
+                <div style={style}></div>
+            )
+        }
+
+        return(
+            <div onClick={handleClick} style={style}>
+                <Depan color={_.get(colorLib, tagDepan)}/>
+                <Kiri color={_.get(colorLib, tagKiri)}/>
+                <Tengah color={_.get(colorLib, tagTengah)}>{text}</Tengah>
+                <Kanan color={_.get(colorLib, tagKanan)}/>
+                <Belakang color={_.get(colorLib, tagBelakang)}/>
+            </div>
+        )
+    }
+
+    class App extends React.Component{
+
+        // Belum Erupsi, Sudah Dicabut, Sudah Goyah, Tambalan, Karies, Gigi Tiruan, Gigi Sehat, Normal
+        state={
+            odontogram:[],
+            selected:{
+                gigi:12,
+                depan:{text:'Belum Erupsi', id:'belum_erupsi'},
+                kiri:{text:'Normal', id:'normal'},
+                tengah:{text:'Normal', id:'normal'},
+                kanan:{text:'Normal', id:'normal'},
+                Belakang:{text:'Normal', id:'normal'},
+                block:{text:'', id:'none'}
+            },
+            data:[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28,55,54,53,52,51,61,62,63,64,65,85,84,83,82,81,71,72,73,74,75,48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38].map(v =>{
+                return {
+                    gigi:v,
+                    depan:{text:'Normal', id:'normal'},
+                    kiri:{text:'Normal', id:'normal'},
+                    tengah:{text:'Normal', id:'normal'},
+                    kanan:{text:'Normal', id:'normal'},
+                    belakang:{text:'Normal', id:'normal'},
+                    block:{text:'', id:'none'}
+                }
+            })
+        }
+
+        async componentDidMount(){
+            let {status_code, data} = await this.getOdontogram()
+            if(_.isEqual(status_code, 200)){
+                this.setState({data:_.get(data, 'odontogram', [])})
+            }
+            
+        }
+        getOdontogram = async () =>{
+            let response = await axios.get("{{route('odontogram-get-json', ['id_pasien'=>$pasien->id]),}}")
+            return response
+        }
+
+        setOdontogram = async (data) =>{
+            let {status_code} = await axios.post("{{route('odontogram-set-json')}}", data)
+            return status_code
+        }
+
+        handleClick(value){
+            console.log(value)
+        }
+
+        getGigi= (gigi) =>{
+            const {data} = this.state
+            const {} = JSON.parse(JSON.stringify(data))
+            let index = _.findIndex(data, v =>{
+                return gigi == v.gigi
+            })
+            return data[index]
+        }
+
+        detailGigiContainer = {
+            diplay:'flex',
+            justifyContent:'center'
+        }
+        detailGigiStyle = {
+            width:'217px'
+        }
+        
+        render(){
+            console.log('render')
+            return(
+                <div>
+                    <Gigi 
+                        depan=""
+                        kiri=""
+                        tengah=""
+                        kanan=""
+                        belakang=""
+                        block=""
+                        text="12"
+                        gridTemplate={`50px 100px 50px`}
+                    />
+                    <Container>
+                        <DiagramContainer>
+                            <LeftContainer>
+                                {[18,17,16,15,14,13,12,11].map(v=>{
+                                    return (
+                                        <Gigi 
+                                            onClick={this.handleClick} 
+                                            tagDepan={this.getGigi(v).depan.id}
+                                            tagKiri={this.getGigi(v).kiri.id}
+                                            tagTengah={this.getGigi(v).tengah.id}
+                                            tagKanan={this.getGigi(v).kanan.id}
+                                            tagBelakang={this.getGigi(v).belakang.id}
+                                            tagBlock={this.getGigi(v).block.id}
+                                            text={v}
+                                        />
+                                    )
+                                })}
+                            </LeftContainer>
+                            <RightContainer>
+                                {[21,22,23,24,25,26,27,28].map(v=>{
+                                    return (
+                                        <Gigi 
+                                            onClick={this.handleClick} 
+                                            tagDepan={this.getGigi(v).depan.id}
+                                            tagKiri={this.getGigi(v).kiri.id}
+                                            tagTengah={this.getGigi(v).tengah.id}
+                                            tagKanan={this.getGigi(v).kanan.id}
+                                            tagBelakang={this.getGigi(v).belakang.id}
+                                            tagBlock={this.getGigi(v).block.id}
+                                            text={v}
+                                        />
+                                    )
+                                })}
+                            </RightContainer>
+                            <LeftContainer>
+                                {[55,54,53,52,51].map(v=>{
+                                    return (
+                                        <Gigi 
+                                            onClick={this.handleClick} 
+                                            tagDepan={this.getGigi(v).depan.id}
+                                            tagKiri={this.getGigi(v).kiri.id}
+                                            tagTengah={this.getGigi(v).tengah.id}
+                                            tagKanan={this.getGigi(v).kanan.id}
+                                            tagBelakang={this.getGigi(v).belakang.id}
+                                            tagBlock={this.getGigi(v).block.id}
+                                            text={v}
+                                        />
+                                    )
+                                })}
+                            </LeftContainer>
+                            <RightContainer>
+                                {[61,62,63,64,65].map(v=>{
+                                    return (
+                                        <Gigi 
+                                            onClick={this.handleClick} 
+                                            tagDepan={this.getGigi(v).depan.id}
+                                            tagKiri={this.getGigi(v).kiri.id}
+                                            tagTengah={this.getGigi(v).tengah.id}
+                                            tagKanan={this.getGigi(v).kanan.id}
+                                            tagBelakang={this.getGigi(v).belakang.id}
+                                            tagBlock={this.getGigi(v).block.id}
+                                            text={v}
+                                        />
+                                    )
+                                })}
+                            </RightContainer>
+                            <LeftContainer>
+                                {[85,84,83,82,81].map(v=>{
+                                    return (
+                                        <Gigi 
+                                            onClick={this.handleClick} 
+                                            tagDepan={this.getGigi(v).depan.id}
+                                            tagKiri={this.getGigi(v).kiri.id}
+                                            tagTengah={this.getGigi(v).tengah.id}
+                                            tagKanan={this.getGigi(v).kanan.id}
+                                            tagBelakang={this.getGigi(v).belakang.id}
+                                            tagBlock={this.getGigi(v).block.id}
+                                            text={v}
+                                        />
+                                    )
+                                })}
+                            </LeftContainer>
+                            <RightContainer>
+                                {[71,72,73,74,75].map(v=>{
+                                    return (
+                                        <Gigi 
+                                            onClick={this.handleClick} 
+                                            tagDepan={this.getGigi(v).depan.id}
+                                            tagKiri={this.getGigi(v).kiri.id}
+                                            tagTengah={this.getGigi(v).tengah.id}
+                                            tagKanan={this.getGigi(v).kanan.id}
+                                            tagBelakang={this.getGigi(v).belakang.id}
+                                            tagBlock={this.getGigi(v).block.id}
+                                            text={v}
+                                        />
+                                    )
+                                })}
+                            </RightContainer>
+                            <LeftContainer>
+                                {[48,47,46,45,44,43,42,41].map(v=>{
+                                    return (
+                                        <Gigi 
+                                            onClick={this.handleClick} 
+                                            tagDepan={this.getGigi(v).depan.id}
+                                            tagKiri={this.getGigi(v).kiri.id}
+                                            tagTengah={this.getGigi(v).tengah.id}
+                                            tagKanan={this.getGigi(v).kanan.id}
+                                            tagBelakang={this.getGigi(v).belakang.id}
+                                            tagBlock={this.getGigi(v).block.id}
+                                            text={v}
+                                        />
+                                    )
+                                })}
+                                
+                            </LeftContainer>
+                            <RightContainer>
+                                {[31,32,33,34,35,36,37,38].map(v=>{
+                                    return (
+                                        <Gigi 
+                                            onClick={this.handleClick} 
+                                            tagDepan={this.getGigi(v).depan.id}
+                                            tagKiri={this.getGigi(v).kiri.id}
+                                            tagTengah={this.getGigi(v).tengah.id}
+                                            tagKanan={this.getGigi(v).kanan.id}
+                                            tagBelakang={this.getGigi(v).belakang.id}
+                                            tagBlock={this.getGigi(v).block.id}
+                                            text={v}
+                                        />
+                                    )
+                                })}
+                            </RightContainer>
+                        </DiagramContainer>
+                    </Container>
+                </div>
+            )
+        }
+    }
+    ReactDOM.render(<App/>, document.getElementById('odontogram-diagram'))
 </script>
 @endsection

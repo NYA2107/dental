@@ -22,11 +22,11 @@
     </div>
 @endif
 <div id="app"> </div>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
-<script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{url('react/babel.min.js')}}"></script>
+<script src="{{url('react/lodash.min.js')}}"></script>
+<script crossorigin src="{{url('react/react.production.min.js')}}"></script>
+<script crossorigin src="{{url('react/react-dom.production.min.js')}}"></script>
+<script src="{{url('react/axios.min.js')}}"></script>
 <script type="text/babel">
 
     class App extends React.Component{
