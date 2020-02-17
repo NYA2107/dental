@@ -120,7 +120,7 @@
                 <h3 class="card-title text-white">{{$v->nama}}</h3>
                 <p class="card-text">@if($v->jenis_kelamin == 'L')Laki-laki @else Perempuan @endif , <code>{{$v->pekerjaan}}</code> yang lahir pada tanggal <code>{{$tanggal_lahir}}</code> didaftarkan sebagai pasien pada tanggal <code>{{$tanggal}}</code></p>
                 <p class="card-text">Alamat : <code>{{$v->alamat}}</code></p>
-                <a href="javascript:void(0)" class="btn btn-light">Tambah Ke Antrian</a>
+                <a href="{{route('antrian-add-json', ['id'=>$v->id])}}" class="btn btn-light">Tambah Ke Antrian</a>
                 <a href="javascript:void(0)" data-toggle="modal" data-target="#modal-kunjungan-{{$v->id}}" class="btn btn-secondary">Berkunjung</a>
                 <a href="{{route('pasien-detail', $v->id)}}" class="btn btn-primary">Detail</a>
             </div>

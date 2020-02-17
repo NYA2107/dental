@@ -45,7 +45,7 @@
         <h3 class="card-title text-white">{{$pasien->nama}}</h3>
         <p class="card-text">@if($pasien->jenis_kelamin == 'L')Laki-laki @else Perempuan @endif , Seorang <code>{{$pasien->pekerjaan}}</code> yang lahir pada tanggal <code>{{$tanggal_lahir}}</code> didaftarkan sebagai pasien pada tanggal <code>{{$tanggal}}</code></p>
         <p class="card-text">Alamat : <code>{{$pasien->alamat}}</code></p>
-        <a href="javascript:void(0)" class="btn btn-light">Tambah Ke Antrian</a>
+        <a href="{{route('antrian-add-json', ['id'=>$pasien->id])}}" class="btn btn-light">Tambah Ke Antrian</a>
         <a href="javascript:void(0)" data-toggle="modal" data-target="#modal-kunjungan" class="btn btn-secondary">Berkunjung</a>
     </div>
 </div>

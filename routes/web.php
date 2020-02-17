@@ -39,3 +39,8 @@ Route::post('/kunjungan/remove', 'KunjunganController@remove')->name('kunjungan-
 Route::post('/kunjungan/edit', 'KunjunganController@edit')->name('kunjungan-edit');
 Route::post('/kunjungan/excel', 'KunjunganController@exportExcel')->name('kunjungan-excel');
 Route::post('/kunjungan/pdf', 'KunjunganController@exportPdf')->name('kunjungan-pdf');
+
+Route::get('/antrian', 'AntrianController@index')->name('antrian');
+Route::post('/antrian', 'AntrianController@getAntrian')->name('antrian-get-json');
+Route::get('/antrian/add', 'AntrianController@addAntrian')->name('antrian-add-json');
+Route::post('/antrian/set', 'AntrianController@setAntrian')->name('antrian-set-json');

@@ -15,7 +15,7 @@ class CreateAntrianTable extends Migration
     {
         Schema::create('antrian', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('id_pasien')->unique()->nullable();
+            $table->json('antrian');
             $table->timestamps();
         });
     }

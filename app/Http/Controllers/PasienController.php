@@ -148,6 +148,7 @@ class PasienController extends Controller
 
     //POST
     function store(Request $request){
+        dd($request->all());
         $validator = Validator::make($request->all(), $this->rules);
         if($validator->fails()){
             return Redirect::to(route('pasien-add'))->withErrors(['error' => 'Data yang anda masukkan tidak valid atau sudah terdaftar']);
