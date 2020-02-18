@@ -540,7 +540,7 @@
 
     const Gigi = (props) =>{
         let gridTemplate = props.gridTemplate?props.gridTemplate:'10px 20px 10px'
-        let innerPadding = props.innerPadding?props.innerPadding:'1px'
+        let innerPadding = props.innerPadding?props.innerPadding:'0.4px'
         let {gigi, onClick, depan, kiri, tengah, kanan, belakang, block} = props
         if(block != 'none'){
             depan = block
