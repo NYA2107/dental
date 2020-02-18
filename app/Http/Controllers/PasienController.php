@@ -161,7 +161,7 @@ class PasienController extends Controller
                 'tengah'=>['text'=>'Normal', 'id'=>'normal'],
                 'kanan'=>['text'=>'Normal', 'id'=>'normal'],
                 'belakang'=>['text'=>'Normal', 'id'=>'normal'],
-                'block'=>['text'=>'Normal', 'id'=>'normal'],
+                'block'=>['text'=>'-', 'id'=>'none'],
             ];},[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28,55,54,53,52,51,61,62,63,64,65,85,84,83,82,81,71,72,73,74,75,48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38]);
             if($save){
                 $saveOdontogram = Odontogram::create(['id_pasien'=>$save->id, 'odontogram'=>json_encode($dataOdontogram)]);
@@ -201,7 +201,17 @@ class PasienController extends Controller
 
     //POST
     function remove(Request $request){
-        $pasien = Pasien::find($request->id);
+        $pasien = Pasien::findOrFail($request->id);
+        $kunjungan = Kunjungan::where('id_pasien', $request->id)->get();
+        $odontogram = Odontogram::where('id_pasien', $request->id)->get();
+        // dd([$pasien, $kunjungan, $odontogram]);
+        foreach($kunjungan as $v){
+            $v->delete();
+        }
+
+        foreach($odontogram as $v){
+            $v->delete();
+        }
         if($pasien->delete()){
             return Redirect::to(route('pasien-list'))->with('msg', 'Data berhasil dihapus');
         }

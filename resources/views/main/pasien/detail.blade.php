@@ -466,8 +466,10 @@
 <script crossorigin src="{{url('react/react.production.min.js')}}"></script>
 <script crossorigin src="{{url('react/react-dom.production.min.js')}}"></script>
 <script src="{{url('react/axios.min.js')}}"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-tiny-popover@4.0.0/dist/Popover.min.js"></script>
 <script type="text/babel"> 
-    let colorLib = {
+
+    const colorLib = {
         lightGrey:'#e2e2e2',
         grey:'#757575',
         normal:'white',
@@ -478,8 +480,14 @@
         karies:'#c34cff',
         gigi_tiruan:'#ffd84c',
         gigi_sehat:'#4cdbff',
-        none:'none'
+        none:'white'
     }
+
+    const categoryList = [
+        {
+            
+        }
+    ]
 
     const Container = (props) =>{
         let style = {
@@ -532,20 +540,21 @@
 
     const Gigi = (props) =>{
         let gridTemplate = props.gridTemplate?props.gridTemplate:'10px 20px 10px'
-        let {text, onClick, tagDepan, tagKiri, tagTengah, tagKanan, tagBelakang, tagBlock} = props
-        if(tagBlock != 'none'){
-            tagDepan = tagBlock
-            tagKiri = tagBlock
-            tagTengah = tagBlock
-            tagKanan = tagBlock
-            tagBelakang = tagBlock
+        let innerPadding = props.innerPadding?props.innerPadding:'1px'
+        let {gigi, onClick, depan, kiri, tengah, kanan, belakang, block} = props
+        if(block != 'none'){
+            depan = block
+            kiri = block
+            tengah = block
+            kanan = block
+            belakang = block
         }
         let style = {
             display:'grid',
             gridTemplateColumns:gridTemplate,
             gridTemplateRows:gridTemplate,
             margin:'0.5em',
-            padding:'0.4px',
+            padding:`${innerPadding}`,
             border:`1px solid ${colorLib.grey}`, 
             cursor:'pointer',
             backgroundColor:colorLib.lightGrey
@@ -613,14 +622,13 @@
                 <div style={style}></div>
             )
         }
-
         return(
             <div onClick={handleClick} style={style}>
-                <Depan color={_.get(colorLib, tagDepan)}/>
-                <Kiri color={_.get(colorLib, tagKiri)}/>
-                <Tengah color={_.get(colorLib, tagTengah)}>{text}</Tengah>
-                <Kanan color={_.get(colorLib, tagKanan)}/>
-                <Belakang color={_.get(colorLib, tagBelakang)}/>
+                <Depan color={_.get(colorLib, depan)}/>
+                <Kiri color={_.get(colorLib, kiri)}/>
+                <Tengah color={_.get(colorLib, tengah)}>{gigi}</Tengah>
+                <Kanan color={_.get(colorLib, kanan)}/>
+                <Belakang color={_.get(colorLib, belakang)}/>
             </div>
         )
     }
@@ -629,14 +637,13 @@
 
         // Belum Erupsi, Sudah Dicabut, Sudah Goyah, Tambalan, Karies, Gigi Tiruan, Gigi Sehat, Normal
         state={
-            odontogram:[],
             selected:{
-                gigi:12,
-                depan:{text:'Belum Erupsi', id:'belum_erupsi'},
+                gigi:'-',
+                depan:{text:'Normal', id:'normal'},
                 kiri:{text:'Normal', id:'normal'},
                 tengah:{text:'Normal', id:'normal'},
                 kanan:{text:'Normal', id:'normal'},
-                Belakang:{text:'Normal', id:'normal'},
+                belakang:{text:'Normal', id:'normal'},
                 block:{text:'', id:'none'}
             },
             data:[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28,55,54,53,52,51,61,62,63,64,65,85,84,83,82,81,71,72,73,74,75,48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38].map(v =>{
@@ -649,13 +656,17 @@
                     belakang:{text:'Normal', id:'normal'},
                     block:{text:'', id:'none'}
                 }
-            })
+            }),
+            detailSelected:{
+                bagian:'block',
+                kategori:'normal',
+            }
         }
 
         async componentDidMount(){
-            let {status_code, data} = await this.getOdontogram()
-            if(_.isEqual(status_code, 200)){
-                this.setState({data:_.get(data, 'odontogram', [])})
+            let {status, data} = await this.getOdontogram()
+            if(_.isEqual(status, 200)){
+                await this.setState({data:data.odontogram, idPasien:data.idPasien})
             }
             
         }
@@ -668,9 +679,36 @@
             let {status_code} = await axios.post("{{route('odontogram-set-json')}}", data)
             return status_code
         }
-
-        handleClick(value){
+        // Belum Erupsi, Sudah Dicabut, Sudah Goyah, Tambalan, Karies, Gigi Tiruan, Gigi Sehat, Normal
+        handleClick = (value) =>{
+            let mapText = {
+                normal:'Normal',
+                belum_erupsi:'Belum Erupsi',
+                sudah_dicabut:'Sudah Dicabut',
+                sudah_goyah:'Sudah Goyah',
+                tambalan:'Tambalan',
+                karies:'Karies',
+                gigi_tiruan:'Gigi Tiruan',
+                gigi_sehat:'Gigi Sehat',
+                none:'-'
+            }
             console.log(value)
+            let temp = JSON.parse(JSON.stringify(value))
+            temp.depan = {id:temp.depan, text:_.get(mapText, temp.depan)}
+            temp.kiri = {id:temp.kiri, text:_.get(mapText, temp.kiri)}
+            temp.tengah = {id:temp.tengah, text:_.get(mapText, temp.tengah)}
+            temp.kanan = {id:temp.kanan, text:_.get(mapText, temp.kanan)}
+            temp.belakang = {id:temp.belakang, text:_.get(mapText, temp.belakang)}
+            temp.block = {id:temp.block, text:_.get(mapText, temp.block)}
+            this.setState({selected:temp})
+        }
+
+        handleChangeDetail = (e) =>{
+            const {detailSelected} = this.state
+            const {value, name} = e.target
+            let temp = JSON.parse(JSON.stringify(detailSelected))
+            _.set(temp, name, value)
+            this.setState({detailSelected:temp})
         }
 
         getGigi= (gigi) =>{
@@ -687,23 +725,174 @@
             justifyContent:'center'
         }
         detailGigiStyle = {
-            width:'217px'
+            width:'220px'
+        }
+        containerDetailGigiStyle = {
+            display:'flex',
+            justifyContent:'center'
+        }
+
+        keteranganStyle = {
+            marginTop:'1px',
+            marginBottom:'1px',
+            width:'100%',
+        }
+        keteranganHeaderStyle = {
+            fontWeight:'bold',
+            width:'100%',
+        }
+        containerKeteranganStyle = {
+            display:'flex',
+            flexWrap:'wrap',
+            alignItems:'center',
+            alignContent:'center',
+            width:'300px'
+        }
+
+        containerActionStyle = {
+            margin:'1em',
+            borderLeft:`1px solid ${colorLib.lightGrey}`,
+            paddingLeft:'1em',
+            display:'flex',
+            flexWrap:'wrap',
+            width:'250px'
+        }
+
+        containerLegendStyle = {
+            margin:'1em',
+            borderLeft:`1px solid ${colorLib.lightGrey}`,
+            paddingLeft:'1em',
+            display:'flex',
+            flexWrap:'wrap',
+            alignContent:'center',
+            width:'150px',
+        }
+        // Belum Erupsi, Sudah Dicabut, Sudah Goyah, Tambalan, Karies, Gigi Tiruan, Gigi Sehat, Normal
+        getCategoryStyle = (category)=>{
+            return {
+                backgroundColor:_.get(colorLib, category),
+                margin:'1px',
+                width:'100%'
+            }
+        }
+
+        getCategoryLabelStyle = (category)=>{
+            return {
+                backgroundColor:_.get(colorLib, category),
+                margin:'1px',
+                paddingLeft:'1em',
+                paddingRight:'1em',
+            }
+        }
+
+        getLabelCategory = (id, text) =>{
+            return(
+                <span className="text-white" style={this.getCategoryLabelStyle(id)}>{text}</span>
+            )
+        }
+
+        handleSave = async () =>{
+            let mapText = {
+                normal:'Normal',
+                sudah_dicabut:'Sudah Dicabut',
+                belum_erupsi:'Belum Erupsi',
+                sudah_goyah:'Sudah Goyah',
+                tambalan:'Tambalan',
+                karies:'Karies',
+                gigi_tiruan:'Gigi Tiruan',
+                gigi_sehat:'Gigi Sehat',
+                normal:'Normal',
+                none:'-'
+            }
+            const {selected, detailSelected, data} = this.state
+            let tempSelected = JSON.parse(JSON.stringify(selected))
+            let tempSelectedDetail = JSON.parse(JSON.stringify(detailSelected))
+            let tempData = JSON.parse(JSON.stringify(data))
+            let idGigi = tempSelected.gigi
+            let index = _.findIndex(tempData, (v)=>{
+                return v.gigi == idGigi
+            })
+            _.set(tempData[index], tempSelectedDetail.bagian, {id:tempSelectedDetail.kategori, text:_.get(mapText, tempSelectedDetail.kategori)})
+            let resp = await axios.post("{{route('odontogram-set-json')}}", {
+                id_pasien:"{{$pasien->id}}",
+                odontogram:tempData,
+            })
+
+            if(_.get(resp,'data.msg', '') == 'success'){
+                alert("Berhasil menyimpan perubahan")
+                let {status, data} = await this.getOdontogram()
+                if(_.isEqual(status, 200)){
+                    await this.setState({data:data.odontogram, idPasien:data.idPasien, selected:JSON.parse(JSON.stringify(data.odontogram[index]))})
+                }
+            }
         }
         
         render(){
-            console.log('render')
+            const {selected, detailSelected} = this.state
             return(
                 <div>
-                    <Gigi 
-                        depan=""
-                        kiri=""
-                        tengah=""
-                        kanan=""
-                        belakang=""
-                        block=""
-                        text="12"
-                        gridTemplate={`50px 100px 50px`}
-                    />
+                    <div style={this.containerDetailGigiStyle}>
+                        <div style={this.detailGigiStyle}>
+                            <Gigi 
+                                depan={selected.depan.id}
+                                kiri={selected.kiri.id}
+                                tengah={selected.tengah.id}
+                                kanan={selected.kanan.id}
+                                belakang={selected.belakang.id}
+                                block={selected.block.id}
+                                gigi={selected.gigi}
+                                gridTemplate={`50px 100px 50px`}
+                                innerPadding='1px'
+                            />
+                        </div>
+                        <div style={this.containerKeteranganStyle}>
+                            <p style={this.keteranganHeaderStyle}>Keterangan</p>
+                            <p style={this.keteranganStyle}>Semua Bagian : {this.getLabelCategory(selected.block.id, selected.block.text)}</p>
+                            <p style={this.keteranganStyle}>Depan : {this.getLabelCategory(selected.depan.id, selected.depan.text)}</p>
+                            <p style={this.keteranganStyle}>Kiri : {this.getLabelCategory(selected.kiri.id, selected.kiri.text)}</p>
+                            <p style={this.keteranganStyle}>Tengah : {this.getLabelCategory(selected.tengah.id, selected.tengah.text)}</p>
+                            <p style={this.keteranganStyle}>Kanan : {this.getLabelCategory(selected.kanan.id, selected.kanan.text)}</p>
+                            <p style={this.keteranganStyle}>Belakang : {this.getLabelCategory(selected.belakang.id, selected.belakang.text)}</p>
+                        </div>
+                        {selected.gigi == '-'?null:
+                        <div style={this.containerActionStyle}>
+                            Pilih Bagian : 
+                            <select onChange={this.handleChangeDetail} className="form-control" name="bagian">
+                                <option value="block">Semua Bagian</option>
+                                <option value="depan">Depan</option>
+                                <option value="kiri">Kiri</option>
+                                <option value="tengah">Tengah</option>
+                                <option value="kanan">Kanan</option>
+                                <option value="belakang">Belakang</option>
+                            </select>
+                            
+                            Pilih Kategori : 
+                            <select onChange={this.handleChangeDetail} name="kategori" className="form-control">
+                                <option value="normal">Normal</option>
+                                <option value="belum_erupsi">Belum Erupsi</option>
+                                <option value="sudah_dicabut">Sudah Dicabut</option>
+                                <option value="sudah_goyah">Sudah Goyah</option>
+                                <option value="tambalan">Tambalan</option>
+                                <option value="karies">Karies</option>
+                                <option value="gigi_tiruan">Gigi Tiruan</option>
+                                <option value="gigi_sehat">Gigi Sehat</option>
+                                <option value="none">---</option>
+                            </select>
+
+                            <button onClick={this.handleSave} className="btn btn-dark">Simpan</button>
+                        </div>
+                        }
+                        <div style={this.containerLegendStyle}>
+                            <p style={this.keteranganHeaderStyle}>Legend</p>
+                            <p style={this.getCategoryStyle('sudah_dicabut')} className="badge text-white">Sudah Dicabut</p>
+                            <p style={this.getCategoryStyle('belum_erupsi')} className="badge text-white">Belum Erupsi</p>
+                            <p style={this.getCategoryStyle('sudah_goyah')} className="badge text-white">Sudah Goyah</p>
+                            <p style={this.getCategoryStyle('tambalan')} className="badge text-white">Tambalan</p>
+                            <p style={this.getCategoryStyle('karies')} className="badge text-white">Karies</p>
+                            <p style={this.getCategoryStyle('gigi_tiruan')} className="badge text-white">Gigi Tiruan</p>
+                            <p style={this.getCategoryStyle('gigi_sehat')} className="badge text-white">Gigi Sehat</p>
+                        </div>
+                    </div>
                     <Container>
                         <DiagramContainer>
                             <LeftContainer>
@@ -711,13 +900,13 @@
                                     return (
                                         <Gigi 
                                             onClick={this.handleClick} 
-                                            tagDepan={this.getGigi(v).depan.id}
-                                            tagKiri={this.getGigi(v).kiri.id}
-                                            tagTengah={this.getGigi(v).tengah.id}
-                                            tagKanan={this.getGigi(v).kanan.id}
-                                            tagBelakang={this.getGigi(v).belakang.id}
-                                            tagBlock={this.getGigi(v).block.id}
-                                            text={v}
+                                            depan={this.getGigi(v).depan.id}
+                                            kiri={this.getGigi(v).kiri.id}
+                                            tengah={this.getGigi(v).tengah.id}
+                                            kanan={this.getGigi(v).kanan.id}
+                                            belakang={this.getGigi(v).belakang.id}
+                                            block={this.getGigi(v).block.id}
+                                            gigi={v}
                                         />
                                     )
                                 })}
@@ -727,13 +916,13 @@
                                     return (
                                         <Gigi 
                                             onClick={this.handleClick} 
-                                            tagDepan={this.getGigi(v).depan.id}
-                                            tagKiri={this.getGigi(v).kiri.id}
-                                            tagTengah={this.getGigi(v).tengah.id}
-                                            tagKanan={this.getGigi(v).kanan.id}
-                                            tagBelakang={this.getGigi(v).belakang.id}
-                                            tagBlock={this.getGigi(v).block.id}
-                                            text={v}
+                                            depan={this.getGigi(v).depan.id}
+                                            kiri={this.getGigi(v).kiri.id}
+                                            tengah={this.getGigi(v).tengah.id}
+                                            kanan={this.getGigi(v).kanan.id}
+                                            belakang={this.getGigi(v).belakang.id}
+                                            block={this.getGigi(v).block.id}
+                                            gigi={v}
                                         />
                                     )
                                 })}
@@ -743,13 +932,13 @@
                                     return (
                                         <Gigi 
                                             onClick={this.handleClick} 
-                                            tagDepan={this.getGigi(v).depan.id}
-                                            tagKiri={this.getGigi(v).kiri.id}
-                                            tagTengah={this.getGigi(v).tengah.id}
-                                            tagKanan={this.getGigi(v).kanan.id}
-                                            tagBelakang={this.getGigi(v).belakang.id}
-                                            tagBlock={this.getGigi(v).block.id}
-                                            text={v}
+                                            depan={this.getGigi(v).depan.id}
+                                            kiri={this.getGigi(v).kiri.id}
+                                            tengah={this.getGigi(v).tengah.id}
+                                            kanan={this.getGigi(v).kanan.id}
+                                            belakang={this.getGigi(v).belakang.id}
+                                            block={this.getGigi(v).block.id}
+                                            gigi={v}
                                         />
                                     )
                                 })}
@@ -759,13 +948,13 @@
                                     return (
                                         <Gigi 
                                             onClick={this.handleClick} 
-                                            tagDepan={this.getGigi(v).depan.id}
-                                            tagKiri={this.getGigi(v).kiri.id}
-                                            tagTengah={this.getGigi(v).tengah.id}
-                                            tagKanan={this.getGigi(v).kanan.id}
-                                            tagBelakang={this.getGigi(v).belakang.id}
-                                            tagBlock={this.getGigi(v).block.id}
-                                            text={v}
+                                            depan={this.getGigi(v).depan.id}
+                                            kiri={this.getGigi(v).kiri.id}
+                                            tengah={this.getGigi(v).tengah.id}
+                                            kanan={this.getGigi(v).kanan.id}
+                                            belakang={this.getGigi(v).belakang.id}
+                                            block={this.getGigi(v).block.id}
+                                            gigi={v}
                                         />
                                     )
                                 })}
@@ -775,13 +964,13 @@
                                     return (
                                         <Gigi 
                                             onClick={this.handleClick} 
-                                            tagDepan={this.getGigi(v).depan.id}
-                                            tagKiri={this.getGigi(v).kiri.id}
-                                            tagTengah={this.getGigi(v).tengah.id}
-                                            tagKanan={this.getGigi(v).kanan.id}
-                                            tagBelakang={this.getGigi(v).belakang.id}
-                                            tagBlock={this.getGigi(v).block.id}
-                                            text={v}
+                                            depan={this.getGigi(v).depan.id}
+                                            kiri={this.getGigi(v).kiri.id}
+                                            tengah={this.getGigi(v).tengah.id}
+                                            kanan={this.getGigi(v).kanan.id}
+                                            belakang={this.getGigi(v).belakang.id}
+                                            block={this.getGigi(v).block.id}
+                                            gigi={v}
                                         />
                                     )
                                 })}
@@ -791,13 +980,13 @@
                                     return (
                                         <Gigi 
                                             onClick={this.handleClick} 
-                                            tagDepan={this.getGigi(v).depan.id}
-                                            tagKiri={this.getGigi(v).kiri.id}
-                                            tagTengah={this.getGigi(v).tengah.id}
-                                            tagKanan={this.getGigi(v).kanan.id}
-                                            tagBelakang={this.getGigi(v).belakang.id}
-                                            tagBlock={this.getGigi(v).block.id}
-                                            text={v}
+                                            depan={this.getGigi(v).depan.id}
+                                            kiri={this.getGigi(v).kiri.id}
+                                            tengah={this.getGigi(v).tengah.id}
+                                            kanan={this.getGigi(v).kanan.id}
+                                            belakang={this.getGigi(v).belakang.id}
+                                            block={this.getGigi(v).block.id}
+                                            gigi={v}
                                         />
                                     )
                                 })}
@@ -807,13 +996,13 @@
                                     return (
                                         <Gigi 
                                             onClick={this.handleClick} 
-                                            tagDepan={this.getGigi(v).depan.id}
-                                            tagKiri={this.getGigi(v).kiri.id}
-                                            tagTengah={this.getGigi(v).tengah.id}
-                                            tagKanan={this.getGigi(v).kanan.id}
-                                            tagBelakang={this.getGigi(v).belakang.id}
-                                            tagBlock={this.getGigi(v).block.id}
-                                            text={v}
+                                            depan={this.getGigi(v).depan.id}
+                                            kiri={this.getGigi(v).kiri.id}
+                                            tengah={this.getGigi(v).tengah.id}
+                                            kanan={this.getGigi(v).kanan.id}
+                                            belakang={this.getGigi(v).belakang.id}
+                                            block={this.getGigi(v).block.id}
+                                            gigi={v}
                                         />
                                     )
                                 })}
@@ -824,13 +1013,13 @@
                                     return (
                                         <Gigi 
                                             onClick={this.handleClick} 
-                                            tagDepan={this.getGigi(v).depan.id}
-                                            tagKiri={this.getGigi(v).kiri.id}
-                                            tagTengah={this.getGigi(v).tengah.id}
-                                            tagKanan={this.getGigi(v).kanan.id}
-                                            tagBelakang={this.getGigi(v).belakang.id}
-                                            tagBlock={this.getGigi(v).block.id}
-                                            text={v}
+                                            depan={this.getGigi(v).depan.id}
+                                            kiri={this.getGigi(v).kiri.id}
+                                            tengah={this.getGigi(v).tengah.id}
+                                            kanan={this.getGigi(v).kanan.id}
+                                            belakang={this.getGigi(v).belakang.id}
+                                            block={this.getGigi(v).block.id}
+                                            gigi={v}
                                         />
                                     )
                                 })}

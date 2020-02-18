@@ -46,4 +46,4 @@ Route::get('/antrian/add', 'AntrianController@addAntrian')->name('antrian-add-js
 Route::post('/antrian/set', 'AntrianController@setAntrian')->name('antrian-set-json');
 
 Route::get('/odontogram/{id_pasien}', 'OdontogramController@get')->name('odontogram-get-json');
-Route::get('/odontogram/set', 'OdontogramController@set')->name('odontogram-set-json');
+Route::post('/odontogram/set/', 'OdontogramController@set')->name('odontogram-set-json');

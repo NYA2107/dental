@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Antrian;
 
 class DatabaseSeeder extends Seeder
 {
@@ -11,6 +12,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
+        $this->call(AntrianTableSeeder::class);
+        $this->command->info('Antrian seeded!');
     }
+}
+
+class AntrianTableSeeder extends Seeder {
+
+    public function run()
+    {
+        Antrian::create(['antrian' => json_encode([])]);
+    }
+
 }
