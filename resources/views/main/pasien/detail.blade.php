@@ -671,7 +671,7 @@
             
         }
         getOdontogram = async () =>{
-            let response = await axios.get("{{route('odontogram-get-json', ['id_pasien'=>$pasien->id]),}}")
+            let response = await axios.get("{{route('odontogram-get-json', ['id_pasien'=>$pasien->id])}}")
             return response
         }
 
