@@ -105,7 +105,7 @@ class PasienController extends Controller
         }
         
     }
-
+    
     function detailKunjunganSearch(Request $request, $id){
         $pasien = Pasien::find($id);
         $file = FileStorage::where('id_pasien',$id)->orderBy('tanggal', 'desc')->paginate(20);
