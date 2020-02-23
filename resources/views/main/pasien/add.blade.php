@@ -54,6 +54,14 @@
                         <label class="form-control-label">Alamat</label>
                         <textarea placeholder="Masukan alamat" name="alamat" class="form-control"></textarea>
                     </div>
+                    <div style="grid-column:1/7;">
+                        <label class="form-control-label">Alergi Obat</label>
+                        <textarea placeholder="Masukan alergi obat pasien" name="alergi_obat" class="form-control"></textarea>
+                    </div>
+                    <div style="grid-column:1/7;">
+                        <label class="form-control-label">Riwayat Penyakit</label>
+                        <textarea placeholder="Masukan riwayat penyakit pasien" name="riwayat_penyakit" class="form-control"></textarea>
+                    </div>
                     <div style="grid-column:1/7">
                         <label class="form-control-label">Jenis Kelamin</label>
                         <div class="custom-control custom-radio">

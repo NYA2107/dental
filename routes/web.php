@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('dashboard');
-});
+Route::get('/', 'DashboardController@index')->name('dashboard');
 
 Route::get('/dokter/list', 'DokterController@list')->name('dokter-list');
 Route::post('/dokter/store', 'DokterController@store')->name('dokter-store');

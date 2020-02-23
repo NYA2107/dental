@@ -8,7 +8,7 @@ class Pasien extends Model
 {
     //
     protected $table = "pasien";
-    protected $fillable = ['nama', 'no_rekam_medis', 'tanggal', 'alamat', 'tanggal_lahir', 'jenis_kelamin', 'pekerjaan'];
+    protected $fillable = ['nama', 'no_rekam_medis', 'tanggal', 'alergi_obat', 'riwayat_penyakit', 'alamat', 'tanggal_lahir', 'jenis_kelamin', 'pekerjaan'];
 
     public function kunjungan(){
         return $this->hasMany('App\Kunjungan', 'id_pasien', 'id');

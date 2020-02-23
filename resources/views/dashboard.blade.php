@@ -68,9 +68,7 @@
                             <!-- Logo text -->
                             <span class="logo-text">
                                 <!-- dark Logo text -->
-                                <img src="{{url('adminmart/assets/images/logo-text.png')}}" alt="homepage" class="dark-logo" />
-                                <!-- Light Logo text -->
-                                <img src="{{url('adminmart/assets/images/logo-light-text.png')}}" class="light-logo" alt="homepage" />
+                                <h4 class="dark-logo" style="font-weight:bold;color:#808299;">Home <span style="color:#5ca4b2">Dental Care</span></h4>
                             </span>
                         </a>
                     </div>
@@ -102,11 +100,11 @@
                         <!-- ============================================================== -->
                         <li class="nav-item d-none d-md-block">
                             <a class="nav-link" href="javascript:void(0)">
-                                <form>
+                                <form method="get" action="{{route('pasien-search')}}">
                                     <div class="customize-input">
-                                        <input class="form-control custom-shadow custom-radius border-0 bg-white"
+                                        <input name="nama" class="form-control custom-shadow custom-radius border-0 bg-white"
                                             type="search" placeholder="Search" aria-label="Search">
-                                        <i class="form-control-icon" data-feather="search"></i>
+                                        <i type="submit" class="form-control-icon" data-feather="search"></i>
                                     </div>
                                 </form>
                             </a>
@@ -128,7 +126,7 @@
                 <!-- Sidebar navigation-->
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
-                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="index.html"
+                        <li class="sidebar-item {{$active=='dashboard'?'selected':''}}"> <a class="sidebar-link sidebar-link" href="{{route('dashboard')}}"
                                 aria-expanded="false"><i data-feather="home" class="feather-icon"></i><span
                                     class="hide-menu">Dashboard</span></a></li>
                         <li class="list-divider"></li>

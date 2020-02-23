@@ -18,6 +18,8 @@ class CreatePasienTable extends Migration
             $table->string('nama', 100);
             $table->string('no_rekam_medis', 100)->unique();
             $table->date('tanggal');
+            $table->text('alergi_obat');
+            $table->text('riwayat_penyakit');
             $table->text('alamat');
             $table->date('tanggal_lahir');
             $table->string('jenis_kelamin');

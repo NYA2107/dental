@@ -45,6 +45,8 @@
         <h3 class="card-title text-white">{{$pasien->nama}}</h3>
         <p class="card-text">@if($pasien->jenis_kelamin == 'L')Laki-laki @else Perempuan @endif , Seorang <code>{{$pasien->pekerjaan}}</code> yang lahir pada tanggal <code>{{$tanggal_lahir}}</code> didaftarkan sebagai pasien pada tanggal <code>{{$tanggal}}</code></p>
         <p class="card-text">Alamat : <code>{{$pasien->alamat}}</code></p>
+        <p class="card-text">Alergi Obat : <code>{{$pasien->alergi_obat}}</code></p>
+        <p class="card-text">Riwayat Penyakit : <code>{{$pasien->riwayat_penyakit}}</code></p>
         <a href="{{route('antrian-add-json', ['id'=>$pasien->id])}}" class="btn btn-light">Tambah Ke Antrian</a>
         <a href="javascript:void(0)" data-toggle="modal" data-target="#modal-kunjungan" class="btn btn-secondary">Berkunjung</a>
     </div>
@@ -440,6 +442,14 @@
                     <div style="grid-column:1/7;">
                         <label class="form-control-label">Alamat</label>
                         <textarea type="date" placeholder="Masukan alamat" name="alamat" class="form-control">{{$pasien->alamat}}</textarea>
+                    </div>
+                    <div style="grid-column:1/7;">
+                        <label class="form-control-label">Alergi Obat</label>
+                        <textarea placeholder="Masukan alergi obat pasien" name="alergi_obat" class="form-control">{{$pasien->alergi_obat}}</textarea>
+                    </div>
+                    <div style="grid-column:1/7;">
+                        <label class="form-control-label">Riwayat Penyakit</label>
+                        <textarea placeholder="Masukan riwayat penyakit pasien" name="riwayat_penyakit" class="form-control">{{$pasien->riwayat_penyakit}}</textarea>
                     </div>
                     <div style="grid-column:1/7">
                         <label class="form-control-label">Jenis Kelamin</label>
