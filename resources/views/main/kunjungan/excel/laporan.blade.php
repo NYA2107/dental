@@ -14,6 +14,9 @@
         <tr>
             <th colspan="6" style="font-size:18pt; text-align:center;"><strong>Tanggal : {{$from}} sampai {{$to}}</strong></th>
         </tr>
+        <tr>
+            <th colspan="6" style="font-size:18pt; text-align:center;"><strong>Dokter : {{$dokter}}</strong></th>
+        </tr>
     </thead>
 </table>
 

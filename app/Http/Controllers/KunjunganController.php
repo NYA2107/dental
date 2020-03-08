@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Validator;
 use Illuminate\Http\Request;
 use App\Kunjungan;
+use App\Dokter;
 use Carbon\Carbon;
 use Redirect;
 use Maatwebsite\Excel\Facades\Excel;
@@ -28,6 +29,7 @@ class KunjunganController extends Controller
 
     function list(Request $request){
         $kunjungan = Kunjungan::orderBy('tanggal', 'desc')->paginate(10);
+        $dokter = Dokter::all();
         $totalKunjungan = count($kunjungan);
         $totalBiaya = 0;
         foreach ($kunjungan as $v) {
@@ -37,26 +39,40 @@ class KunjunganController extends Controller
         ->with('kunjungan', $kunjungan)
         ->with('totalKunjungan',$totalKunjungan)
         ->with('totalBiaya',$totalBiaya)
+        ->with('dokter', $dokter)
         ->with('active', $this->active);
     }
 
     //HELPER
-    function filterByDate($from, $to, $order){
-        if($from && $to){
-            $kunjungan = Kunjungan::whereBetween('tanggal', [$from, $to])->orderBy('tanggal', $order);
-        }else if($from){
-            $kunjungan = Kunjungan::where('tanggal', '>=', $from )->orderBy('tanggal', $order);
-        }else if($to){
-            $kunjungan = Kunjungan::where('tanggal', '<=', $to )->orderBy('tanggal', $order);
+    function filterByDate($from, $to, $id_dokter, $order){
+        if($id_dokter == "SEMUA"){
+            if($from && $to){
+                $kunjungan = Kunjungan::whereBetween('tanggal', [$from, $to])->orderBy('tanggal', $order);
+            }else if($from){
+                $kunjungan = Kunjungan::where('tanggal', '>=', $from )->orderBy('tanggal', $order);
+            }else if($to){
+                $kunjungan = Kunjungan::where('tanggal', '<=', $to )->orderBy('tanggal', $order);
+            }else{
+                $kunjungan = Kunjungan::orderBy('tanggal', $order);
+            }    
+        }else{
+            if($from && $to){
+                $kunjungan = Kunjungan::where('id_dokter', $id_dokter)->whereBetween('tanggal', [$from, $to])->orderBy('tanggal', $order);
+            }else if($from){
+                $kunjungan = Kunjungan::where('id_dokter', $id_dokter)->where('tanggal', '>=', $from )->orderBy('tanggal', $order);
+            }else if($to){
+                $kunjungan = Kunjungan::where('id_dokter', $id_dokter)->where('tanggal', '<=', $to )->orderBy('tanggal', $order);
+            }else{
+                $kunjungan = Kunjungan::where('id_dokter', $id_dokter)->orderBy('tanggal', $order);
+            }
         }
-        else{
-            $kunjungan = Kunjungan::orderBy('tanggal', $order);
-        }
+        
         return ['kunjunganReal' => $kunjungan->get(), 'kunjungan' => $kunjungan->paginate(10)];
     }
 
     function filter(Request $request){
-        $kunjungan = $this->filterByDate($request->from, $request->to, 'desc');
+        $kunjungan = $this->filterByDate($request->from, $request->to, $request->id_dokter, 'desc');
+        $dokter = Dokter::all();
         $kunjunganReal = $kunjungan['kunjunganReal'];
         $kunjungan = $kunjungan['kunjungan'];
         $totalKunjungan = count($kunjunganReal);
@@ -67,9 +83,11 @@ class KunjunganController extends Controller
         return view('main.kunjungan.list')
         ->with('from', $request->from)
         ->with('to', $request->to)
+        ->with('id_dokter', $request->id_dokter)
         ->with('kunjungan', $kunjungan)
         ->with('totalKunjungan',$totalKunjungan)
         ->with('totalBiaya',$totalBiaya)
+        ->with('dokter', $dokter)
         ->with('active', $this->active);
     }
 
@@ -120,19 +138,30 @@ class KunjunganController extends Controller
     }
 
     function exportExcel(Request $request){
-        $data = $this->filterByDate($request->from, $request->to, 'asc');
+        $data = $this->filterByDate($request->from, $request->to, $request->id_dokter, 'asc');
         $kunjungan = $data['kunjunganReal'];
         $totalKunjungan = count($kunjungan);
+        if($request->id_dokter !== 'SEMUA' && $request->id_dokter !== ''){
+            $dokter = Dokter::find($request->id_dokter)->nama;
+        }else{
+            $dokter = "Semua";
+        }
         $totalBiaya = 0;
         foreach ($kunjungan as $v) {
             $totalBiaya = $totalBiaya + $v->biaya;
         }
-        return Excel::download(new KunjunganExport($kunjungan, $totalBiaya, $totalKunjungan, ($request->from?$request->from:'Kunjungan Pertama'), ($request->to?$request->to:'Kunjungan Terakhir')), 'kunjungan_'.($request->from?$request->from:'awal').'_to_'.($request->to?$request->to:'terakhir').'.xlsx');
+        return Excel::download(new KunjunganExport($kunjungan, $totalBiaya, $totalKunjungan, ($request->from?$request->from:'Kunjungan Pertama'), ($request->to?$request->to:'Kunjungan Terakhir'), $dokter), $dokter.'_kunjungan_'.($request->from?$request->from:'awal').'_to_'.($request->to?$request->to:'terakhir').'.xlsx');
     }
 
     function exportPdf(Request $request){
-        $kunjungan = $this->filterByDate($request->from, $request->to, 'asc')['kunjunganReal'];
+        $kunjungan = $this->filterByDate($request->from, $request->to, $request->id_dokter, 'asc')['kunjunganReal'];
         $totalKunjungan = count($kunjungan);
+        if($request->id_dokter !== 'SEMUA' && $request->id_dokter !== ''){
+            $dokter = Dokter::find($request->id_dokter)->nama;
+        }else{
+            $dokter = "Semua";
+        }
+        
         $totalBiaya = 0;
         foreach ($kunjungan as $v) {
             $totalBiaya = $totalBiaya + $v->biaya;
@@ -143,8 +172,9 @@ class KunjunganController extends Controller
             'totalBiaya'=>$totalBiaya, 
             'totalKunjungan'=>$totalKunjungan, 
             'from'=> ($request->from?$request->from:'Kunjungan Pertama'), 
-            'to'=>($request->to?$request->to:'Kunjungan Terakhir')
-        ])->download('kunjungan_'.($request->from?$request->from:'Kunjungan Pertama').'_to_'.($request->to?$request->to:'Kunjungan Terakhir').'.pdf');
+            'to'=>($request->to?$request->to:'Kunjungan Terakhir'),
+            'dokter'=>$dokter,
+        ])->download($dokter.'_kunjungan_'.($request->from?$request->from:'Kunjungan Pertama').'_to_'.($request->to?$request->to:'Kunjungan Terakhir').'.pdf');
     }
 
 }

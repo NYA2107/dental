@@ -8,12 +8,13 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
 class KunjunganExport implements FromView, ShouldAutoSize
 {
-    public function __construct($kunjungan, $totalBiaya, $totalKunjungan, $from, $to){
+    public function __construct($kunjungan, $totalBiaya, $totalKunjungan, $from, $to, $dokter){
         $this->kunjungan = $kunjungan;
         $this->totalBiaya = $totalBiaya;
         $this->totalKunjungan = $totalKunjungan;
         $this->from = $from;
         $this->to = $to;
+        $this->dokter = $dokter;
     }
 
 
@@ -24,6 +25,7 @@ class KunjunganExport implements FromView, ShouldAutoSize
         ->with('totalBiaya', $this->totalBiaya)
         ->with('totalKunjungan', $this->totalKunjungan)
         ->with('from', $this->from)
+        ->with('dokter', $this->dokter)
         ->with('to', $this->to);
     }
 }

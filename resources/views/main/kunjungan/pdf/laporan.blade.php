@@ -38,6 +38,7 @@
 ?>
 <h1 style="text-align:center">Laporan Kunjungan Home Dental Care</h1>
 <h3 style="text-align:center">{{$from}} Sampai {{$to}}</h1>
+<h3 style="text-align:center">{{$dokter}}</h1>
 <table id="customers">
     <tr>
         <th><strong>No RM</strong></th>

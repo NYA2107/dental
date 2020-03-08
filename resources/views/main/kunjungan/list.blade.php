@@ -27,7 +27,29 @@
                     <label class="form-control-label">Sampai Tanggal</label>
                     <input type="date" value="{{$to??''}}" class="form-control" name="to">
                 </div>
+                
             </div>
+            <?php
+                $id_dokter = $id_dokter??'SEMUA'
+            ?>
+            <div style="margin-top:1em">
+                    <label for="dokter">Dokter</label>
+                    <select class="form-control" name="id_dokter" id="dokter">
+                        <option value="SEMUA">Semua</option>
+                        @foreach($dokter as $o)
+                            <?php
+                            $selected = ''; 
+                                if($id_dokter == $o->id){
+                                    $selected = 'selected';
+                                }else{
+                                    $selected = '';
+                                }
+                            ?>
+                            <option {{$selected}} value="{{$o->id}}">{{$o->nama}}</option>
+                        @endforeach
+                        
+                    </select>
+                </div>
             <div style="display:flex;justify-content:center;margin-top:1em;">
                 <input type="submit" value="Set Filter" class="form-control btn waves-effect waves-light btn-dark">
             </div>
@@ -50,12 +72,14 @@
                         {{ csrf_field() }}
                         <input type="hidden" name="from" value="{{$from??''}}">
                         <input type="hidden" name="to" value="{{$to??''}}">
+                        <input type="hidden" name="id_dokter" value="{{$id_dokter??''}}">
                         <input type="submit" class="btn btn-success text-white" value="Export to Excel">
                     </form>
                     <form style="grid-column:2/3" method="post" action="{{route('kunjungan-pdf')}}">
                         {{ csrf_field() }}
                         <input type="hidden" name="from" value="{{$from??''}}">
                         <input type="hidden" name="to" value="{{$to??''}}">
+                        <input type="hidden" name="id_dokter" value="{{$id_dokter??''}}">
                         <input type="submit" class="btn btn-success text-white" value="Export to Pdf">
                     </form>
                 </div>
@@ -66,6 +90,7 @@
 
 <div class="card">
     <div class="card-body">
+        <p>Dokter : <code>{{$id_dokter??'Semua'}}</code></p>
         <p>Menampilkan : <code>{{$totalKunjungan??''}}</code> Kunjungan</p>
         <p>Total Pemasukan : <code>@currency($totalBiaya)</code></p>
     </div>
